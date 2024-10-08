@@ -12,7 +12,9 @@ public class ProductController {
     private List<Product> productList = new ArrayList<>();
     private ProductService productService;
 
-
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping("/getProducts")
     public List<Product> getProducts() {
@@ -21,12 +23,12 @@ public class ProductController {
 
     @PostMapping("/addProduct")
     public ResponseEntity<List> addProduct(@RequestBody Product product) {
-        productList =productService.add(product);
+        productList = productService.add(product);
         //productList.add(product);
         return ResponseEntity.ok(productList);
     }
 
-    private Product findProductById(int id) {
+    private Product findProductById(long id) {
         for (Product product : productList) {
             if (product.getProductCode() == id) {
                 return product;
@@ -35,26 +37,23 @@ public class ProductController {
         return null;
     }
 
+    // Update Product Method
     @PutMapping("/updateProduct/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable int id, @RequestBody Product updatedProduct) {
-        Product existingProduct = findProductById(id);
+    public ResponseEntity<List<Product>> updateProduct(@PathVariable long id, @RequestBody Product updatedProduct) {
+        List<Product> productList = productService.updateProduct(id, updatedProduct);
 
-        if (existingProduct != null) {
-            existingProduct.setProductName(updatedProduct.getProductName());
-            existingProduct.setProductDescription(updatedProduct.getProductDescription());
-            existingProduct.setProductPrice(updatedProduct.getProductPrice());
-            return ResponseEntity.ok(existingProduct);
+        if (productList != null) {
+            return ResponseEntity.ok(productList);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/deleteProduct/{id}")
-    public ResponseEntity<List<Product>> deleteProduct(@PathVariable int id) {
-        Product existingProduct = findProductById(id);
+    public ResponseEntity<List<Product>> deleteProduct(@PathVariable long id) {
+        List<Product> productList = productService.deleteProduct(id);
 
-        if (existingProduct != null) {
-            productList.remove(existingProduct);
+        if (productList != null && !productList.isEmpty()) {
             return ResponseEntity.ok(productList);
         } else {
             return ResponseEntity.notFound().build();
