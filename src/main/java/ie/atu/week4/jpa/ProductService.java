@@ -14,8 +14,7 @@ public class ProductService {
         this.productRepo = productRepo;
     }
 
-    public List<Product> add(Product product)
-    {
+    public List<Product> add(Product product) {
 
         productRepo.save(product);
         return productRepo.findAll();
@@ -29,6 +28,17 @@ public class ProductService {
             existingProduct.setProductDescription(updatedProduct.getProductDescription());
             existingProduct.setProductPrice(updatedProduct.getProductPrice());
             productRepo.save(existingProduct);
+        }
+
+        return productRepo.findAll();
+    }
+
+
+    public List<Product> deleteProduct(long id) {
+        Product existingProduct = productRepo.findById(id).orElse(null);
+
+        if (existingProduct != null) {
+            productRepo.delete(existingProduct);
         }
 
         return productRepo.findAll();
